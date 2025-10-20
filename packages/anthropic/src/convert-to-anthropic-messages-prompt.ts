@@ -47,6 +47,15 @@ function convertToString(data: LanguageModelV3DataContent): string {
   });
 }
 
+function isValidUrl(string: string): boolean {
+  try {
+    new URL(string);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function convertToAnthropicMessagesPrompt({
   prompt,
   sendReasoning,
@@ -313,7 +322,26 @@ export async function convertToAnthropicMessagesPrompt({
                               message: `unsupported tool content part type: ${contentPart.type} with media type: ${contentPart.mediaType}`,
                             });
 
-                            return undefined;
+                            if (isValidUrl(contentPart.data)) {
+                              return {
+                                type: 'document',
+                                source: {
+                                  type: 'url',
+                                  url: contentPart.data,
+                                },
+                                cache_control: undefined,
+                              };
+                            }
+
+                            return {
+                              type: 'document',
+                              source: {
+                                type: 'base64',
+                                media_type: contentPart.mediaType,
+                                data: contentPart.data,
+                              },
+                              cache_control: undefined,
+                            };
                           }
                           default: {
                             warnings.push({
