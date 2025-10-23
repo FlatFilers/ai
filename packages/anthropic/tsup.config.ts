@@ -6,6 +6,7 @@ export default defineConfig([
     format: ['cjs', 'esm'],
     dts: true,
     sourcemap: true,
+    noExternal: ['@ai-sdk/provider', '@ai-sdk/provider-utils'],
     define: {
       __PACKAGE_VERSION__: JSON.stringify(
         (await import('./package.json', { with: { type: 'json' } })).default
@@ -19,6 +20,7 @@ export default defineConfig([
     format: ['cjs', 'esm'],
     dts: true,
     sourcemap: true,
+    noExternal: ['@ai-sdk/provider', '@ai-sdk/provider-utils'],
     define: {
       __PACKAGE_VERSION__: JSON.stringify(
         (await import('./package.json', { with: { type: 'json' } })).default
