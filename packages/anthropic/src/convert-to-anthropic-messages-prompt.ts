@@ -265,6 +265,7 @@ export async function convertToAnthropicMessagesPrompt({
 
                 const output = part.output;
                 let contentValue: AnthropicToolResultContent['content'];
+                console.log('🌀🌀🌀 HERE', content);
                 switch (output.type) {
                   case 'content':
                     contentValue = output.value.map(contentPart => {
