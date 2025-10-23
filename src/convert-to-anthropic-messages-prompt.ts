@@ -265,7 +265,6 @@ export async function convertToAnthropicMessagesPrompt({
 
                 const output = part.output;
                 let contentValue: AnthropicToolResultContent['content'];
-                console.log('🌀🌀🌀 HERE', content);
                 switch (output.type) {
                   case 'content':
                     contentValue = output.value.map(contentPart => {
@@ -278,6 +277,16 @@ export async function convertToAnthropicMessagesPrompt({
                           };
                         case 'media': {
                           if (contentPart.mediaType.startsWith('image/')) {
+                            if (isValidUrl(contentPart.data)) {
+                              return {
+                                type: 'image',
+                                source: {
+                                  type: 'url',
+                                  url: contentPart.data,
+                                },
+                                cache_control: undefined,
+                              };
+                            }
                             return {
                               type: 'image',
                               source: {
