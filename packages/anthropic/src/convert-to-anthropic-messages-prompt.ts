@@ -277,6 +277,16 @@ export async function convertToAnthropicMessagesPrompt({
                           };
                         case 'media': {
                           if (contentPart.mediaType.startsWith('image/')) {
+                            if (isValidUrl(contentPart.data)) {
+                              return {
+                                type: 'image',
+                                source: {
+                                  type: 'url',
+                                  url: contentPart.data,
+                                },
+                                cache_control: undefined,
+                              };
+                            }
                             return {
                               type: 'image',
                               source: {
