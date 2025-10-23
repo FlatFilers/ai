@@ -1230,7 +1230,6 @@ async function convertToAnthropicMessagesPrompt({
                 const cacheControl = getCacheControl(part.providerOptions) ?? (isLastPart ? getCacheControl(message.providerOptions) : void 0);
                 const output = part.output;
                 let contentValue;
-                console.log("\u{1F300}\u{1F300}\u{1F300} HERE", content);
                 switch (output.type) {
                   case "content":
                     contentValue = output.value.map((contentPart) => {
@@ -1243,6 +1242,16 @@ async function convertToAnthropicMessagesPrompt({
                           };
                         case "media": {
                           if (contentPart.mediaType.startsWith("image/")) {
+                            if (isValidUrl(contentPart.data)) {
+                              return {
+                                type: 'image',
+                                source: {
+                                  type: 'url',
+                                  url: contentPart.data,
+                                },
+                                cache_control: undefined,
+                              };
+                            }
                             return {
                               type: "image",
                               source: {
