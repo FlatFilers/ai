@@ -1,6 +1,6 @@
 {
   "name": "@flatfile/anthropic",
-  "version": "3.0.0-beta.26",
+  "version": "3.0.0-beta.27",
   "license": "Apache-2.0",
   "sideEffects": false,
   "main": "./dist/index.js",
@@ -49,7 +49,7 @@
     "zod": "3.25.76"
   },
   "peerDependencies": {
-    "zod": "^3.25.76 || ^4.1.8"
+    "zod": "^3.25.76"
   },
   "engines": {
     "node": ">=18"

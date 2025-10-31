@@ -3,7 +3,7 @@ import {
   lazySchema,
   zodSchema,
 } from '@ai-sdk/provider-utils';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 const computer_20241022InputSchema = lazySchema(() =>
   zodSchema(

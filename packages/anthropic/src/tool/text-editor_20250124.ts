@@ -3,7 +3,7 @@ import {
   lazySchema,
   zodSchema,
 } from '@ai-sdk/provider-utils';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 const textEditor_20250124InputSchema = lazySchema(() =>
   zodSchema(

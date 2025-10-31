@@ -3,7 +3,7 @@ import {
   lazySchema,
   zodSchema,
 } from '@ai-sdk/provider-utils';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 export const webFetch_20250910ArgsSchema = lazySchema(() =>
   zodSchema(
