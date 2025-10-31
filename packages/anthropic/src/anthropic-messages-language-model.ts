@@ -1,15 +1,15 @@
 import {
   JSONObject,
-  LanguageModelV3,
-  LanguageModelV3CallWarning,
-  LanguageModelV3Content,
-  LanguageModelV3FinishReason,
-  LanguageModelV3FunctionTool,
-  LanguageModelV3Prompt,
-  LanguageModelV3Source,
-  LanguageModelV3StreamPart,
-  LanguageModelV3Usage,
-  SharedV3ProviderMetadata,
+  LanguageModelV2,
+  LanguageModelV2CallWarning,
+  LanguageModelV2Content,
+  LanguageModelV2FinishReason,
+  LanguageModelV2FunctionTool,
+  LanguageModelV2Prompt,
+  LanguageModelV2Source,
+  LanguageModelV2StreamPart,
+  LanguageModelV2Usage,
+  SharedV2ProviderMetadata,
   UnsupportedFunctionalityError,
 } from '@ai-sdk/provider';
 import {
@@ -49,7 +49,7 @@ function createCitationSource(
     mediaType: string;
   }>,
   generateId: () => string,
-): LanguageModelV3Source | undefined {
+): LanguageModelV2Source | undefined {
   if (citation.type !== 'page_location' && citation.type !== 'char_location') {
     return;
   }
@@ -80,7 +80,7 @@ function createCitationSource(
               startCharIndex: citation.start_char_index,
               endCharIndex: citation.end_char_index,
             },
-    } satisfies SharedV3ProviderMetadata,
+    } satisfies SharedV2ProviderMetadata,
   };
 }
 
@@ -91,12 +91,12 @@ type AnthropicMessagesConfig = {
   fetch?: FetchFunction;
   buildRequestUrl?: (baseURL: string, isStreaming: boolean) => string;
   transformRequestBody?: (args: Record<string, any>) => Record<string, any>;
-  supportedUrls?: () => LanguageModelV3['supportedUrls'];
+  supportedUrls?: () => LanguageModelV2['supportedUrls'];
   generateId?: () => string;
 };
 
-export class AnthropicMessagesLanguageModel implements LanguageModelV3 {
-  readonly specificationVersion = 'v3';
+export class AnthropicMessagesLanguageModel implements LanguageModelV2 {
+  readonly specificationVersion = 'v2';
 
   readonly modelId: AnthropicMessagesModelId;
 
@@ -110,10 +110,6 @@ export class AnthropicMessagesLanguageModel implements LanguageModelV3 {
     this.modelId = modelId;
     this.config = config;
     this.generateId = config.generateId ?? generateId;
-  }
-
-  supportsUrl(url: URL): boolean {
-    return url.protocol === 'https:';
   }
 
   get provider(): string {
@@ -138,8 +134,8 @@ export class AnthropicMessagesLanguageModel implements LanguageModelV3 {
     tools,
     toolChoice,
     providerOptions,
-  }: Parameters<LanguageModelV3['doGenerate']>[0]) {
-    const warnings: LanguageModelV3CallWarning[] = [];
+  }: Parameters<LanguageModelV2['doGenerate']>[0]) {
+    const warnings: LanguageModelV2CallWarning[] = [];
 
     if (frequencyPenalty != null) {
       warnings.push({
@@ -182,7 +178,7 @@ export class AnthropicMessagesLanguageModel implements LanguageModelV3 {
       }
     }
 
-    const jsonResponseTool: LanguageModelV3FunctionTool | undefined =
+    const jsonResponseTool: LanguageModelV2FunctionTool | undefined =
       responseFormat?.type === 'json' && responseFormat.schema != null
         ? {
             type: 'function',
@@ -323,7 +319,7 @@ export class AnthropicMessagesLanguageModel implements LanguageModelV3 {
     return this.config.transformRequestBody?.(args) ?? args;
   }
 
-  private extractCitationDocuments(prompt: LanguageModelV3Prompt): Array<{
+  private extractCitationDocuments(prompt: LanguageModelV2Prompt): Array<{
     title: string;
     filename?: string;
     mediaType: string;
@@ -367,8 +363,8 @@ export class AnthropicMessagesLanguageModel implements LanguageModelV3 {
   }
 
   async doGenerate(
-    options: Parameters<LanguageModelV3['doGenerate']>[0],
-  ): Promise<Awaited<ReturnType<LanguageModelV3['doGenerate']>>> {
+    options: Parameters<LanguageModelV2['doGenerate']>[0],
+  ): Promise<Awaited<ReturnType<LanguageModelV2['doGenerate']>>> {
     const { args, warnings, betas, usesJsonResponseTool } =
       await this.getArgs(options);
 
@@ -391,7 +387,7 @@ export class AnthropicMessagesLanguageModel implements LanguageModelV3 {
       fetch: this.config.fetch,
     });
 
-    const content: Array<LanguageModelV3Content> = [];
+    const content: Array<LanguageModelV2Content> = [];
 
     // map response content to content array
     for (const part of response.content) {
@@ -652,8 +648,8 @@ export class AnthropicMessagesLanguageModel implements LanguageModelV3 {
   }
 
   async doStream(
-    options: Parameters<LanguageModelV3['doStream']>[0],
-  ): Promise<Awaited<ReturnType<LanguageModelV3['doStream']>>> {
+    options: Parameters<LanguageModelV2['doStream']>[0],
+  ): Promise<Awaited<ReturnType<LanguageModelV2['doStream']>>> {
     const { args, warnings, betas, usesJsonResponseTool } =
       await this.getArgs(options);
 
@@ -674,8 +670,8 @@ export class AnthropicMessagesLanguageModel implements LanguageModelV3 {
       fetch: this.config.fetch,
     });
 
-    let finishReason: LanguageModelV3FinishReason = 'unknown';
-    const usage: LanguageModelV3Usage = {
+    let finishReason: LanguageModelV2FinishReason = 'unknown';
+    const usage: LanguageModelV2Usage = {
       inputTokens: undefined,
       outputTokens: undefined,
       totalTokens: undefined,
@@ -717,7 +713,7 @@ export class AnthropicMessagesLanguageModel implements LanguageModelV3 {
       stream: response.pipeThrough(
         new TransformStream<
           ParseResult<InferSchema<typeof anthropicMessagesChunkSchema>>,
-          LanguageModelV3StreamPart
+          LanguageModelV2StreamPart
         >({
           start(controller) {
             controller.enqueue({ type: 'stream-start', warnings });

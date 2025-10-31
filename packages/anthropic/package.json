@@ -1,6 +1,6 @@
 {
   "name": "@flatfile/anthropic",
-  "version": "3.0.0-beta.24",
+  "version": "3.0.0-beta.26",
   "license": "Apache-2.0",
   "sideEffects": false,
   "main": "./dist/index.js",
@@ -39,13 +39,11 @@
     }
   },
   "dependencies": {
-    "@ai-sdk/provider": "workspace:*",
-    "@ai-sdk/provider-utils": "workspace:*"
+    "json-schema": "^0.4.0"
   },
   "devDependencies": {
-    "@ai-sdk/test-server": "workspace:*",
+    "@types/json-schema": "7.0.15",
     "@types/node": "20.17.24",
-    "@vercel/ai-tsconfig": "workspace:*",
     "tsup": "^8",
     "typescript": "5.8.3",
     "zod": "3.25.76"
@@ -59,13 +57,10 @@
   "publishConfig": {
     "access": "public"
   },
-  "homepage": "https://ai-sdk.dev/docs",
+  "description": "Custom Anthropic provider with V2 interfaces and bundled dependencies",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vercel/ai.git"
-  },
-  "bugs": {
-    "url": "https://github.com/vercel/ai/issues"
+    "url": "git+https://github.com/flatfile/ai.git"
   },
   "keywords": [
     "ai"

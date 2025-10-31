@@ -1,9 +1,9 @@
 import {
-  LanguageModelV3CallWarning,
-  LanguageModelV3DataContent,
-  LanguageModelV3Message,
-  LanguageModelV3Prompt,
-  SharedV3ProviderMetadata,
+  LanguageModelV2CallWarning,
+  LanguageModelV2DataContent,
+  LanguageModelV2Message,
+  LanguageModelV2Prompt,
+  SharedV2ProviderMetadata,
   UnsupportedFunctionalityError,
 } from '@ai-sdk/provider';
 import {
@@ -26,7 +26,7 @@ import { codeExecution_20250825OutputSchema } from './tool/code-execution_202508
 import { webFetch_20250910OutputSchema } from './tool/web-fetch-20250910';
 import { webSearch_20250305OutputSchema } from './tool/web-search_20250305';
 
-function convertToString(data: LanguageModelV3DataContent): string {
+function convertToString(data: LanguageModelV2DataContent): string {
   if (typeof data === 'string') {
     return Buffer.from(data, 'base64').toString('utf-8');
   }
@@ -60,9 +60,9 @@ export async function convertToAnthropicMessagesPrompt({
   sendReasoning,
   warnings,
 }: {
-  prompt: LanguageModelV3Prompt;
+  prompt: LanguageModelV2Prompt;
   sendReasoning: boolean;
-  warnings: LanguageModelV3CallWarning[];
+  warnings: LanguageModelV2CallWarning[];
 }): Promise<{
   prompt: AnthropicMessagesPrompt;
   betas: Set<string>;
@@ -74,7 +74,7 @@ export async function convertToAnthropicMessagesPrompt({
   const messages: AnthropicMessagesPrompt['messages'] = [];
 
   async function shouldEnableCitations(
-    providerMetadata: SharedV3ProviderMetadata | undefined,
+    providerMetadata: SharedV2ProviderMetadata | undefined,
   ): Promise<boolean> {
     const anthropicOptions = await parseProviderOptions({
       provider: 'anthropic',
@@ -86,7 +86,7 @@ export async function convertToAnthropicMessagesPrompt({
   }
 
   async function getDocumentMetadata(
-    providerMetadata: SharedV3ProviderMetadata | undefined,
+    providerMetadata: SharedV2ProviderMetadata | undefined,
   ): Promise<{ title?: string; context?: string }> {
     const anthropicOptions = await parseProviderOptions({
       provider: 'anthropic',
@@ -333,9 +333,6 @@ export async function convertToAnthropicMessagesPrompt({
                   case 'text':
                   case 'error-text':
                     contentValue = output.value;
-                    break;
-                  case 'execution-denied':
-                    contentValue = output.reason ?? 'Tool execution denied.';
                     break;
                   case 'json':
                   case 'error-json':
@@ -684,19 +681,19 @@ export async function convertToAnthropicMessagesPrompt({
 
 type SystemBlock = {
   type: 'system';
-  messages: Array<LanguageModelV3Message & { role: 'system' }>;
+  messages: Array<LanguageModelV2Message & { role: 'system' }>;
 };
 type AssistantBlock = {
   type: 'assistant';
-  messages: Array<LanguageModelV3Message & { role: 'assistant' }>;
+  messages: Array<LanguageModelV2Message & { role: 'assistant' }>;
 };
 type UserBlock = {
   type: 'user';
-  messages: Array<LanguageModelV3Message & { role: 'user' | 'tool' }>;
+  messages: Array<LanguageModelV2Message & { role: 'user' | 'tool' }>;
 };
 
 function groupIntoBlocks(
-  prompt: LanguageModelV3Prompt,
+  prompt: LanguageModelV2Prompt,
 ): Array<SystemBlock | AssistantBlock | UserBlock> {
   const blocks: Array<SystemBlock | AssistantBlock | UserBlock> = [];
   let currentBlock: SystemBlock | AssistantBlock | UserBlock | undefined =
