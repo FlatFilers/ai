@@ -1,6 +1,6 @@
 import { JSONSchema7 } from '@ai-sdk/provider';
 import { InferSchema, lazySchema, zodSchema } from '@ai-sdk/provider-utils';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export type AnthropicMessagesPrompt = {
   system: Array<AnthropicTextContent> | undefined;
@@ -478,12 +478,12 @@ export const anthropicMessagesResponseSchema = lazySchema(() =>
       ),
       stop_reason: z.string().nullish(),
       stop_sequence: z.string().nullish(),
-      usage: z.object({
+      usage: z.looseObject({
         input_tokens: z.number(),
         output_tokens: z.number(),
         cache_creation_input_tokens: z.number().nullish(),
         cache_read_input_tokens: z.number().nullish(),
-      }).passthrough(),
+      }),
     }),
   ),
 );
@@ -498,11 +498,11 @@ export const anthropicMessagesChunkSchema = lazySchema(() =>
         message: z.object({
           id: z.string().nullish(),
           model: z.string().nullish(),
-          usage: z.object({
+          usage: z.looseObject({
             input_tokens: z.number(),
             cache_creation_input_tokens: z.number().nullish(),
             cache_read_input_tokens: z.number().nullish(),
-          }).passthrough(),
+          }),
         }),
       }),
       z.object({
@@ -718,10 +718,10 @@ export const anthropicMessagesChunkSchema = lazySchema(() =>
           stop_reason: z.string().nullish(),
           stop_sequence: z.string().nullish(),
         }),
-        usage: z.object({
+        usage: z.looseObject({
           output_tokens: z.number(),
           cache_creation_input_tokens: z.number().nullish(),
-        }).passthrough(),
+        }),
       }),
       z.object({
         type: z.literal('message_stop'),
