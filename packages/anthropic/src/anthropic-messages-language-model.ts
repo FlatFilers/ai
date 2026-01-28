@@ -301,10 +301,35 @@ export class AnthropicMessagesLanguageModel implements LanguageModelV2 {
     betas: Set<string>;
     headers: Record<string, string | undefined> | undefined;
   }) {
+    const resolvedConfigHeaders = await resolve(this.config.headers);
+
+    // Extract anthropic-beta headers from all sources to merge them
+    // This prevents later headers from overwriting earlier ones
+    const configBetaHeader = resolvedConfigHeaders?.['anthropic-beta'];
+    const requestBetaHeader = headers?.['anthropic-beta'];
+
+    // Merge all beta values from: auto-detected betas, config headers, and request headers
+    const allBetas = new Set<string>(betas);
+
+    if (configBetaHeader) {
+      configBetaHeader.split(',').forEach(beta => allBetas.add(beta.trim()));
+    }
+
+    if (requestBetaHeader) {
+      requestBetaHeader.split(',').forEach(beta => allBetas.add(beta.trim()));
+    }
+
+    // Remove anthropic-beta from individual header sources to avoid overwrites
+    const { 'anthropic-beta': _configBeta, ...configHeadersWithoutBeta } =
+      resolvedConfigHeaders ?? {};
+    const { 'anthropic-beta': _requestBeta, ...requestHeadersWithoutBeta } =
+      headers ?? {};
+
+    // Combine headers with the merged anthropic-beta header
     return combineHeaders(
-      await resolve(this.config.headers),
-      betas.size > 0 ? { 'anthropic-beta': Array.from(betas).join(',') } : {},
-      headers,
+      configHeadersWithoutBeta,
+      requestHeadersWithoutBeta,
+      allBetas.size > 0 ? { 'anthropic-beta': Array.from(allBetas).join(',') } : {},
     );
   }
 

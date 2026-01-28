@@ -605,6 +605,91 @@ describe('AnthropicMessagesLanguageModel', () => {
       `);
     });
 
+    it('should merge anthropic-beta headers from provider and auto-detected betas', async () => {
+      prepareJsonResponse({ content: [] });
+
+      const provider = createAnthropic({
+        apiKey: 'test-api-key',
+        headers: {
+          'anthropic-beta': 'custom-beta-1,custom-beta-2',
+        },
+      });
+
+      // Use a PDF with citations which auto-adds pdfs-2024-09-25 beta
+      await provider('claude-3-haiku-20240307').doGenerate({
+        prompt: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'file',
+                mediaType: 'application/pdf',
+                data: new Uint8Array([1, 2, 3]),
+                filename: 'test.pdf',
+                providerOptions: {
+                  anthropic: {
+                    citations: { enabled: true },
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      });
+
+      const headers = server.calls[0].requestHeaders;
+      const betaHeader = headers['anthropic-beta'];
+
+      // Should contain both auto-detected beta and custom provider betas
+      expect(betaHeader).toContain('pdfs-2024-09-25');
+      expect(betaHeader).toContain('custom-beta-1');
+      expect(betaHeader).toContain('custom-beta-2');
+    });
+
+    it('should merge anthropic-beta headers from provider, request, and auto-detected betas', async () => {
+      prepareJsonResponse({ content: [] });
+
+      const provider = createAnthropic({
+        apiKey: 'test-api-key',
+        headers: {
+          'anthropic-beta': 'provider-beta',
+        },
+      });
+
+      // Use a PDF with citations which auto-adds pdfs-2024-09-25 beta
+      await provider('claude-3-haiku-20240307').doGenerate({
+        prompt: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'file',
+                mediaType: 'application/pdf',
+                data: new Uint8Array([1, 2, 3]),
+                filename: 'test.pdf',
+                providerOptions: {
+                  anthropic: {
+                    citations: { enabled: true },
+                  },
+                },
+              },
+            ],
+          },
+        ],
+        headers: {
+          'anthropic-beta': 'request-beta',
+        },
+      });
+
+      const headers = server.calls[0].requestHeaders;
+      const betaHeader = headers['anthropic-beta'];
+
+      // Should contain all three sources of betas
+      expect(betaHeader).toContain('pdfs-2024-09-25');
+      expect(betaHeader).toContain('provider-beta');
+      expect(betaHeader).toContain('request-beta');
+    });
+
     it('should support cache control', async () => {
       prepareJsonResponse({
         usage: {
