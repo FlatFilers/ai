@@ -460,5 +460,39 @@ describe('OpenResponsesLanguageModel', () => {
         ).toMatchSnapshot();
       });
     });
+
+    describe('premature stream close (no terminal event)', () => {
+      it('should infer finishReason "stop" when text was streamed without response.completed', async () => {
+        prepareChunksFixtureResponse('premature-close-text');
+
+        const result = await createModel().doStream({
+          prompt: TEST_PROMPT,
+        });
+
+        const parts = await convertReadableStreamToArray(result.stream);
+        const finishPart = parts.find(part => part.type === 'finish');
+
+        expect(finishPart?.finishReason).toStrictEqual({
+          unified: 'stop',
+          raw: undefined,
+        });
+      });
+
+      it('should infer finishReason "tool-calls" when tool calls were streamed without response.completed', async () => {
+        prepareChunksFixtureResponse('premature-close-tool-call');
+
+        const result = await createModel().doStream({
+          prompt: TEST_PROMPT,
+        });
+
+        const parts = await convertReadableStreamToArray(result.stream);
+        const finishPart = parts.find(part => part.type === 'finish');
+
+        expect(finishPart?.finishReason).toStrictEqual({
+          unified: 'tool-calls',
+          raw: undefined,
+        });
+      });
+    });
   });
 });
