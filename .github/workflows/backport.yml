@@ -241,7 +241,6 @@ jobs:
               $ASSIGNEE_FLAG)
           fi
           echo "backport-pr-url=$PR_URL" >> "$GITHUB_OUTPUT"
-          gh pr merge "$PR_URL" --auto --squash || echo "Auto-merge could not be enabled"
           echo "Created backport PR $PR_URL"
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
