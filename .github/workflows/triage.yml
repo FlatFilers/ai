@@ -16,7 +16,7 @@ jobs:
     name: Auto-triage Pull Request
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    if: github.event_name == 'pull_request_target'
+    if: github.repository == 'vercel/ai' && github.event_name == 'pull_request_target'
     steps:
       - name: Create access token for GitHub App
         uses: actions/create-github-app-token@v2
@@ -178,7 +178,7 @@ jobs:
     name: Auto-triage Issue
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    if: github.event_name == 'issues'
+    if: github.repository == 'vercel/ai' && github.event_name == 'issues'
     steps:
       - name: Create access token for GitHub App
         uses: actions/create-github-app-token@v2
