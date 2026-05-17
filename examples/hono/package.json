@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@ai-sdk/openai": "4.0.0-beta.16",
-    "@hono/node-server": "1.13.7",
+    "@hono/node-server": "1.19.13",
     "ai": "7.0.0-beta.44",
     "dotenv": "16.4.5",
     "hono": "4.6.9"
